@@ -99,8 +99,6 @@ node scripts/metrics-dashboard.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/metrics-
 ### 图谱标注
 
 - 🔴 **红色**：直接薄弱点或重复/高影响错误。
-- 🟡 **黄色**：相邻知识点或容易混淆的对比概念。
-- 🟢 **绿色**：七日复测成功后的恢复状态。
 - 基础图谱保持无颜色；标注结果写入独立输出，不污染原始图谱。
 
 如果用户提供了自己的 `.xmind` 文件，可以在确认后运行：
@@ -129,8 +127,6 @@ node scripts/mark-xmind.js <SOURCE_XMIND> <MARKS_JSON>
 ```
 
 仓库中的示例资料包括民诉知识结构、Markdown/OPML 导出和已生成的 XMind 版本；它们用于演示和回归测试，不会覆盖用户自己的资料。
-
-原始 `ZH法考思维导图.pdf` 约 350 MB，超过 GitHub 普通仓库的单文件限制，因此未纳入版本库；本地原文件保持不变。
 
 ## 可移植性
 

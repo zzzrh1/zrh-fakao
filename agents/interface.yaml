@@ -75,11 +75,20 @@ inputs:
       question_bank: string
       backup_dir: string
       target_vault: string
+      skill_config: string
   review_mode:
     type: string
     required: false
     enum: ["none", "daily", "seven_day_retest", "full"]
     default: "none"
+  weekly_review:
+    type: object
+    required: false
+    description: Weekly review trigger selected during first-time Vault configuration.
+    fields:
+      method: string
+      technical_workspace: string
+      launchd_installed: boolean
   import_mode:
     type: string
     required: false
@@ -113,6 +122,10 @@ outputs:
     type: markdown
     required: false
     description: Dashboard generated from durable review records.
+  weekly_review_files:
+    type: array
+    required: false
+    description: Current and previous ISO-week Markdown files generated from the mistake index and retest queue.
   implementation_status:
     type: markdown
     required: false
@@ -125,6 +138,9 @@ constraints:
   - Do not expose or request API secrets.
   - Keep outputs usable even when OCR fails by switching to manual tags.
   - Accept a user-supplied mind map for the marking workflow only when it is an XMind .xmind file; do not treat OPML, PDF, or image files as XMind input.
+  - On first use, ask for an Obsidian Vault and persist the selected weekly review method in 00-index/skill-config.json.
+  - Present launchd only on macOS; never require or install an OS-specific scheduler for other users.
+  - Preserve manual content outside AUTO-GENERATED weekly review markers.
   - Keep daily review records separate from the base knowledge graph.
   - Count a mistake once in the index, even if it appears in multiple folders or views.
   - Do not ask the user to select explanations; preserve recognized explanations exactly and write them with the wrong-question card by default.

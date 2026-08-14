@@ -3,6 +3,8 @@
 const fs = require("fs");
 const path = require("path");
 const { updateMarkedMaps } = require("./mark-smm-text-map");
+const { refreshWeeklyReviews } = require("./generate-weekly-review");
+const { shouldRefreshOnIngest } = require("./configure-automation");
 
 const SUBJECTS = ["民法", "刑法", "民诉", "刑诉", "行政法", "商经知", "理论法", "三国法"];
 const CAUSES = ["大意", "知识点不会", "知识点会但是做题思路不对"];
@@ -251,6 +253,21 @@ function ensureSubjectPage(root, subject) {
   return file;
 }
 
+function ensureSubjectMapScaffold(root, subject) {
+  const subjectRoot = path.join(root, "03-maps", subject);
+  for (const dir of ["00-source", "01-base", "02-marked"]) {
+    fs.mkdirSync(path.join(subjectRoot, dir), { recursive: true });
+  }
+  writeIfMissing(path.join(subjectRoot, "README.md"), [
+    `# ${subject}知识图谱`,
+    "",
+    "- `00-source/`：用户提供的原始 `.xmind` 文件。",
+    "- `01-base/`：无错题颜色的基础图谱。",
+    "- `02-marked/`：确认后生成的红/黄/绿标注图谱。",
+    ""
+  ].join("\n"));
+}
+
 function appendUnique(file, marker, lines) {
   const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
   const newLines = lines.filter((line) => line && !current.includes(line));
@@ -268,6 +285,7 @@ function updateDailyReview(root, dateText, cards) {
 function updateSubjectPages(root, cards) {
   for (const card of cards) {
     const subject = card.subject || "未分类";
+    ensureSubjectMapScaffold(root, subject);
     const file = ensureSubjectPage(root, subject);
     const points = selectedKnowledgePoints(card);
     const rows = points.map((point) => `| ${point} | 1 | ${card.id} | 待复盘 | ${card.date} | [[../../../03-maps/${subject}/]] |`);
@@ -409,10 +427,11 @@ function main() {
   updateSubjectPages(root, cards);
   updateCausePages(root, cards);
   const markedGraphs = updateMarkedMaps(root, cards, dateText);
+  const weeklyReviews = shouldRefreshOnIngest(root) ? refreshWeeklyReviews(root, dateText) : [];
 
   const reportFile = path.join(root, "01-daily", dateText, "2-整理好的错题", `${dateText}-错题导入报告.md`);
   fs.writeFileSync(reportFile, reportMarkdown(dateText, cards));
-  console.log(JSON.stringify({ imported: cards.length, report: reportFile, marked_graphs: markedGraphs }, null, 2));
+  console.log(JSON.stringify({ imported: cards.length, report: reportFile, marked_graphs: markedGraphs, weekly_reviews: weeklyReviews }, null, 2));
 }
 
 if (require.main === module) main();

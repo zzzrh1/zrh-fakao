@@ -2,6 +2,8 @@
 
 const fs = require("fs");
 const path = require("path");
+const { refreshWeeklyReviews } = require("./generate-weekly-review");
+const { shouldRefreshOnIngest } = require("./configure-automation");
 
 function usage() {
   console.error("Usage: update-retest.js <review-vault-dir> <mistake-id> <passed|failed|skipped> [note]");
@@ -83,7 +85,8 @@ function main() {
   writeJson(indexFile, index);
   writeJson(queueFile, queue);
   appendRetestLog(root, id, status, note, logItem);
-  console.log(JSON.stringify({ id, status, reviewed_at: today() }, null, 2));
+  const weeklyReviews = shouldRefreshOnIngest(root) ? refreshWeeklyReviews(root, today()) : [];
+  console.log(JSON.stringify({ id, status, reviewed_at: today(), weekly_reviews: weeklyReviews }, null, 2));
 }
 
 if (require.main === module) main();

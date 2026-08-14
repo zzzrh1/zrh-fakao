@@ -8,7 +8,7 @@ const { execSync } = require("child_process");
  * 修改 xmind 文件，给指定的知识点节点标红/标黄
  *
  * 用法：
- * node mark-xmind.js <xmind文件路径> <标注JSON文件路径>
+ * node mark-xmind.js <xmind文件路径> <标注JSON文件路径> [输出XMind路径]
  *
  * 标注JSON格式：
  * {
@@ -90,9 +90,10 @@ function markNodes(node, marks) {
 function main() {
   const xmindFile = process.argv[2];
   const marksFile = process.argv[3];
+  const outputFileArgument = process.argv[4];
 
   if (!xmindFile || !marksFile) {
-    console.error("用法: mark-xmind.js <xmind文件> <标注JSON>");
+    console.error("用法: mark-xmind.js <xmind文件> <标注JSON> [输出XMind路径]");
     process.exit(1);
   }
 
@@ -149,7 +150,11 @@ function main() {
     // 生成输出文件名
     const dir = path.dirname(xmindFile);
     const basename = path.basename(xmindFile, ".xmind");
-    const outputFile = path.join(dir, `${basename}-标注版.xmind`);
+    const outputFile = outputFileArgument
+      ? path.resolve(outputFileArgument)
+      : path.join(dir, `${basename}-标注版.xmind`);
+    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+    if (fs.existsSync(outputFile)) fs.unlinkSync(outputFile);
 
     // 重新打包（按xmind要求的顺序和格式）
     console.log("\n重新打包xmind...");

@@ -17,25 +17,9 @@ const dirs = [
   `01-daily/${today}/1-原始错题素材`,
   `01-daily/${today}/2-整理好的错题`,
   "02-weekly",
-  "03-maps/民法",
-  "03-maps/刑法",
-  "03-maps/民诉",
-  "03-maps/刑诉",
-  "03-maps/行政法",
-  "03-maps/商经知",
-  "03-maps/理论法",
-  "03-maps/三国法",
-  "04-mistakes/by-subject/民法",
-  "04-mistakes/by-subject/刑法",
-  "04-mistakes/by-subject/民诉",
-  "04-mistakes/by-subject/刑诉",
-  "04-mistakes/by-subject/行政法",
-  "04-mistakes/by-subject/商经知",
-  "04-mistakes/by-subject/理论法",
-  "04-mistakes/by-subject/三国法",
-  "04-mistakes/by-cause/大意",
-  "04-mistakes/by-cause/知识点不会",
-  "04-mistakes/by-cause/知识点会但是做题思路不对",
+  "03-maps",
+  "04-mistakes/by-subject",
+  "04-mistakes/by-cause",
   "05-learning-docs",
   "06-assets"
 ];
@@ -50,6 +34,31 @@ function writeIfMissing(file, data) {
   }
 }
 
+function ensureSubjectScaffold(subject) {
+  const normalizedSubject = String(subject || "").trim();
+  if (!normalizedSubject) return;
+  const subjectDirs = [
+    `03-maps/${normalizedSubject}/00-source`,
+    `03-maps/${normalizedSubject}/01-base`,
+    `03-maps/${normalizedSubject}/02-marked`,
+    `04-mistakes/by-subject/${normalizedSubject}`
+  ];
+  for (const dir of subjectDirs) {
+    fs.mkdirSync(path.join(root, dir), { recursive: true });
+  }
+  writeIfMissing(
+    path.join(root, "03-maps", normalizedSubject, "README.md"),
+    [
+      `# ${normalizedSubject}知识图谱`,
+      "",
+      "- `00-source/`：用户提供的原始 `.xmind` 文件。",
+      "- `01-base/`：无错题颜色的基础图谱。",
+      "- `02-marked/`：确认后生成的红/黄/绿标注图谱。",
+      ""
+    ].join("\n")
+  );
+}
+
 writeIfMissing(
   path.join(root, "00-index", "mistake-index.json"),
   JSON.stringify({ mistakes: [] }, null, 2)
@@ -58,6 +67,20 @@ writeIfMissing(
 writeIfMissing(
   path.join(root, "00-index", "retest-queue.json"),
   JSON.stringify({ retests: [] }, null, 2)
+);
+
+writeIfMissing(
+  path.join(root, "00-index", "skill-config.json"),
+  JSON.stringify({
+    schema: "wrong-question.skill-config.v1",
+    version: 1,
+    subject_mode: "on_demand",
+    bundled_subjects: ["民诉"],
+    weekly_review: {
+      method: process.platform === "darwin" ? "unconfigured" : "on_ingest",
+      configured: false
+    }
+  }, null, 2) + "\n"
 );
 
 writeIfMissing(
@@ -158,14 +181,7 @@ writeIfMissing(
     "",
     "## 科目错误知识点",
     "",
-    "- 民法：[[../../04-mistakes/by-subject/民法/错误知识点汇集]]",
-    "- 刑法：[[../../04-mistakes/by-subject/刑法/错误知识点汇集]]",
-    "- 民诉：[[../../04-mistakes/by-subject/民诉/错误知识点汇集]]",
-    "- 刑诉：[[../../04-mistakes/by-subject/刑诉/错误知识点汇集]]",
-    "- 行政法：[[../../04-mistakes/by-subject/行政法/错误知识点汇集]]",
-    "- 商经知：[[../../04-mistakes/by-subject/商经知/错误知识点汇集]]",
-    "- 理论法：[[../../04-mistakes/by-subject/理论法/错误知识点汇集]]",
-    "- 三国法：[[../../04-mistakes/by-subject/三国法/错误知识点汇集]]",
+    "- 按实际使用的科目创建 `04-mistakes/by-subject/<科目>/` 页面。",
     "",
     "## 七天后复测",
     "",
@@ -175,38 +191,6 @@ writeIfMissing(
   ].join("\n")
 );
 
-const subjects = ["民法", "刑法", "民诉", "刑诉", "行政法", "商经知", "理论法", "三国法"];
-for (const subject of subjects) {
-  writeIfMissing(
-    path.join(root, "04-mistakes", "by-subject", subject, "错误知识点汇集.md"),
-    [
-      `# ${subject}错误知识点汇集`,
-      "",
-      "## 高频错误知识点",
-      "",
-      "| 知识点 | 错题次数 | mistake_ids | 当前状态 | 最近出错 | 关联地图 |",
-      "| --- | ---: | --- | --- | --- | --- |",
-      "",
-      "## 待复盘",
-      "",
-      "- ",
-      "",
-      "## 七日复测中",
-      "",
-      "- ",
-      "",
-      "## 已恢复",
-      "",
-      "- ",
-      "",
-      "## 记录规则",
-      "",
-      "- 这里只做知识点汇集和链接，不从本页计数。",
-      "- 统计口径以 `../../../00-index/mistake-index.json` 为准。",
-      "- 每个知识点必须能追溯到至少一个 `mistake_id` 或每日文件夹。",
-      ""
-    ].join("\n")
-  );
-}
+ensureSubjectScaffold(process.env.SUBJECT);
 
 console.log(path.resolve(root));

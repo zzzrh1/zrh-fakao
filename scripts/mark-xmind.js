@@ -101,6 +101,11 @@ function main() {
     process.exit(1);
   }
 
+  if (path.extname(xmindFile).toLowerCase() !== ".xmind") {
+    console.error("错误: 思维导图输入必须是 .xmind 格式");
+    process.exit(1);
+  }
+
   const marks = readJson(marksFile).marks || [];
   if (!marks.length) {
     console.error("错误: 标注JSON中没有marks数组");

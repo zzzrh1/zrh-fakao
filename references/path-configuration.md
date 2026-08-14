@@ -8,7 +8,8 @@ This package does not assume a particular operating system, username, desktop fo
 | --- | --- | --- |
 | `REVIEW_VAULT` | For durable review writes | Root folder containing `00-index`, `01-daily`, `03-maps`, `04-mistakes`, and `05-learning-docs`. |
 | `TECHNICAL_WORKSPACE` | For conversion or reports | Temporary and technical artifacts that should not clutter the learner-facing vault. |
-| `SOURCE_MATERIALS` | When source files are used | User-provided images, OCR text, PDFs, mind maps, or question-bank exports. |
+| `SOURCE_MATERIALS` | When source files are used | User-provided wrong-question images, OCR text, PDFs, or question-bank exports. |
+| `SOURCE_XMIND` | When marking a mind map | User-provided XMind mind map; the file must use the `.xmind` extension and format. |
 | `GRAPH_FILE` | Optional | User-supplied graph JSON. Use the bundled graph only when it is the relevant fallback. |
 | `QUESTION_BANK` | Optional | Trusted question metadata. Do not claim exact matching without it. |
 | `BACKUP_DIR` | Before durable changes | User-selected location for backups of the target vault or files. |
@@ -34,6 +35,7 @@ The scripts accept paths as arguments. Keep the path values outside the skill pa
 REVIEW_VAULT="<REVIEW_VAULT>"
 TECHNICAL_WORKSPACE="<TECHNICAL_WORKSPACE>"
 SOURCE_MATERIALS="<SOURCE_MATERIALS>"
+SOURCE_XMIND="<SOURCE_XMIND>"
 GRAPH_FILE="<GRAPH_FILE>"
 BACKUP_DIR="<BACKUP_DIR>"
 ```
@@ -50,6 +52,12 @@ node scripts/metrics-dashboard.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/metrics-
 ```
 
 If `GRAPH_FILE` is omitted, the graph scripts may use the bundled reference graph. That fallback is package-relative and contains no user filesystem path. For a different subject, pass the user's graph explicitly.
+
+## XMind Input Rules
+
+- A user-uploaded mind map must be an XMind `.xmind` file before the marking workflow can run.
+- Do not pass OPML, PDF, or image files to `scripts/mark-xmind.js` as if they were XMind files.
+- The bundled mind-map example currently covers 民诉 only; additional subjects will be added in later updates.
 
 ## PDF And Obsidian Rules
 

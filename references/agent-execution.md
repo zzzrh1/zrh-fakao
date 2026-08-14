@@ -46,8 +46,14 @@ Minimum useful node fields:
 }
 ```
 
-If the user supplies a new mind map, convert it into nodes and parent/confusable relations before diagnosing at scale.
+If the user supplies a new mind map, require an XMind `.xmind` file for the mind-map workflow, then convert it into nodes and parent/confusable relations before diagnosing at scale. OPML, PDF, and images are not substitutes for the XMind input.
 Base Obsidian Canvas exports should not include `color` fields; create a separate mistake-marked output when coloring is needed.
+
+## User-Supplied XMind Maps
+
+- Accept a user's own `.xmind` file through `SOURCE_XMIND` or the integration's `xmind_file` input.
+- Validate that the file is an XMind archive before marking it, preserve the source, and write a separate marked copy.
+- The bundled example currently covers 民诉; other subjects will be added in later updates.
 
 ## Session Memory
 

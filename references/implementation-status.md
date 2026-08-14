@@ -8,6 +8,7 @@ Design source: external product notes; not required at runtime.
 - Daily folder structure: `01-daily/YYYY-MM-DD/1-原始错题素材` and `2-整理好的错题`.
 - Per-subject weak-point pages for eight law-exam subjects.
 - Deterministic JSON graph marking: `scripts/mark-graph.js`.
+- User-supplied XMind marking with separate output: `scripts/mark-xmind.js`.
 - Separate `.smm.md` text-node based mistake graph marking, including explicit and auto-inferred upper-concept fallback when the user-confirmed knowledge point is too fine-grained for the map: `scripts/mark-smm-text-map.js`.
 - Browser graph view: `scripts/render-graph-view.js`.
 - Wrong-question ingestion into daily files, raw-material copies, subject weak-point pages, marked graph outputs, `mistake-index.json`, and `retest-queue.json`: `scripts/ingest-mistakes.js`.

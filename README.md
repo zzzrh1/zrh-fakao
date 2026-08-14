@@ -31,6 +31,7 @@
 | 错题诊断 | 从题干、选项、解析中提取知识点，区分知识不会与思路错误 | 结构化错题卡 |
 | 知识图谱 | 将直接薄弱点标红，将易混/相邻点标黄 | 标注版图谱 |
 | 日复盘 | 汇总当天科目、单元、错因和优先修复点 | 每日 Markdown |
+| 周复盘 | 汇总一周错题、错因、高频薄弱点和复测结果 | `02-weekly/YYYY-Www.md` |
 | 七日复测 | 到期后记录 `passed`、`failed` 或 `skipped` | 复测队列与日志 |
 | 学习文档 | 围绕薄弱点生成前置知识、讲解、易混点和反馈区 | 学习文档 |
 | 数据面板 | 从统计真源计算错题数、错因组成和复测通过率 | 指标面板 |
@@ -80,6 +81,21 @@ node scripts/ingest-mistakes.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/confirmed-
 node scripts/metrics-dashboard.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/metrics-dashboard.md"
 ```
 
+首次使用时，Skill 会先确认 Obsidian Vault，并创建缺失的核心目录。macOS 用户还会首次选择周复盘方式：`on_ingest`（入库后自动更新，推荐）、`launchd`（macOS 定时任务）或 `manual`（手动生成）。选择会保存到 `00-index/skill-config.json`。
+
+如果需要手动生成当前周和上一周周复盘：
+
+```bash
+node scripts/generate-weekly-review.js "$REVIEW_VAULT"
+```
+
+如果用户选择了 macOS `launchd`，先生成配置；安装 LaunchAgent 需要用户明确选择 `--install`：
+
+```bash
+node scripts/configure-automation.js "$REVIEW_VAULT" launchd "$TECHNICAL_WORKSPACE"
+node scripts/configure-automation.js "$REVIEW_VAULT" launchd "$TECHNICAL_WORKSPACE" --install
+```
+
 ## 工作流
 
 ### 错题入库
@@ -106,16 +122,18 @@ node scripts/metrics-dashboard.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/metrics-
 ```bash
 SOURCE_XMIND="<SOURCE_XMIND>"
 MARKS_JSON="<MARKS_JSON>"
+OUTPUT_XMIND="<OUTPUT_XMIND>"
 
-node scripts/mark-xmind.js "$SOURCE_XMIND" "$MARKS_JSON"
+node scripts/mark-xmind.js "$SOURCE_XMIND" "$MARKS_JSON" "$OUTPUT_XMIND"
 ```
 
-脚本会保留源文件，并在同目录生成 `-标注版.xmind`。OPML、PDF 和图片不能作为这一步的思维导图输入。
+建议将源文件放在 `03-maps/<科目>/00-source/`，基础图谱放在 `01-base/`，标注输出放在 `02-marked/`。脚本会保留源文件；不传 `OUTPUT_XMIND` 时仍会在源文件同目录生成 `-标注版.xmind`。OPML、PDF 和图片不能作为这一步的思维导图输入。
 
 ## 文件结构
 
 ```text
 00-index/
+├── skill-config.json
 ├── mistake-index.json
 └── retest-queue.json
 01-daily/YYYY-MM-DD/
@@ -124,6 +142,9 @@ node scripts/mark-xmind.js "$SOURCE_XMIND" "$MARKS_JSON"
 └── 2-整理好的错题/
 02-weekly/
 03-maps/<科目>/
+├── 00-source/
+├── 01-base/
+└── 02-marked/
 04-mistakes/by-subject/<科目>/
 04-mistakes/by-cause/<错因>/
 05-learning-docs/
@@ -136,7 +157,8 @@ node scripts/mark-xmind.js "$SOURCE_XMIND" "$MARKS_JSON"
 这个 skill 面向其他用户复用：
 
 - 不写死用户主目录、桌面目录、Obsidian vault 或备份目录。
-- 运行时配置 `REVIEW_VAULT`、`TECHNICAL_WORKSPACE`、`SOURCE_MATERIALS`、`SOURCE_XMIND`、`GRAPH_FILE`、`BACKUP_DIR` 和 `TARGET_VAULT`。
+- 运行时配置 `REVIEW_VAULT`、`TECHNICAL_WORKSPACE`、`SOURCE_MATERIALS`、`SOURCE_XMIND`、`GRAPH_FILE`、`BACKUP_DIR` 和 `TARGET_VAULT`；周复盘方式保存在 Vault 内的 `00-index/skill-config.json`。
+- 周复盘自动化不写死操作系统：`on_ingest` 和 `manual` 可跨平台使用，`launchd` 只在 macOS 用户明确选择后启用。
 - 没有指定持久化路径时，默认停留在预览模式或使用宿主提供的临时目录。
 - 用户提供的图谱优先；内置公司法图谱仅作为相关科目的 fallback。
 - 没有可信题库时，不宣称题库精确匹配。

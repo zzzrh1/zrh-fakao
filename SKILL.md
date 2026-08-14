@@ -1,6 +1,6 @@
 ---
 name: wrong-question-review-system
-description: Portable law-exam wrong-question review system with structured diagnosis, user-confirmed knowledge mapping, user-supplied XMind mind-map marking, daily and weekly review, seven-day retesting, and learning-document generation. The bundled mind-map example currently covers 民诉; more subjects will be added later.
+description: Portable law-exam wrong-question review system with structured diagnosis, user-confirmed knowledge mapping, user-supplied XMind mind-map marking, Obsidian vault initialization, configurable weekly review automation, daily review, seven-day retesting, and learning-document generation. The bundled mind-map example currently covers 民诉; more subjects will be added later.
 metadata:
   author: AI法师张诚
   portability: user-configured paths
@@ -25,6 +25,8 @@ metadata:
 - **复盘索引**：按日期、科目、单元和错因组织错题，`mistake-index.json` 是统计真源。
 - **图谱标注**：支持用户上传自己的思维导图，但思维导图输入必须是 `.xmind` 格式；提供 XMind 标注脚本，红色表示直接薄弱点，黄色表示易混点。
 - **科目覆盖**：当前仓库只内置民诉示例，其他法考科目将在后续版本持续更新；用户也可以先上传对应科目的 `.xmind` 图谱。
+- **Obsidian 初始化**：首次使用时创建核心复盘目录，科目目录和图谱子目录按实际使用情况创建，不预填空科目。
+- **周复盘自动化**：支持入库后自动更新、macOS `launchd` 定时更新或手动生成三种模式。
 - **七日复测**：记录 `passed`、`failed`、`skipped`，形成恢复闭环。
 - **学习文档**：围绕薄弱点生成前置知识、主体讲解、易混点、思考题和反馈区。
 
@@ -41,7 +43,19 @@ metadata:
 - 使用 `SOURCE_XMIND` 指定用户上传的 XMind 思维导图；不把 OPML、PDF 或图片当作本功能的思维导图输入。
 - 使用 `GRAPH_FILE` 指定当前科目的图谱；内置图谱只作为相关科目的 fallback。
 - 使用 `TARGET_VAULT` 和 `BACKUP_DIR` 处理用户明确选择的 Obsidian 写入和备份。
+- 使用 `REVIEW_VAULT/00-index/skill-config.json` 保存用户确认过的科目创建模式和周复盘触发方式。
 - 路径解析和脚本示例见 `references/path-configuration.md`。
+
+## 首次配置与周复盘自动化
+
+1. 首次使用时，先让用户选择已有 Obsidian Vault 或新建 Vault，并确认 `REVIEW_VAULT`。
+2. 如果 `00-index/skill-config.json` 不存在，初始化核心目录并只创建缺失文件，不覆盖已有内容。
+3. macOS 用户首次配置时询问周复盘方式：
+   - `on_ingest`：确认入库或完成复测后自动更新本周和上周周复盘，推荐。
+   - `launchd`：使用 macOS LaunchAgent 每周定时生成；只有用户明确选择后才生成或安装配置。
+   - `manual`：不自动触发，只在用户要求时生成。
+4. 非 macOS 环境默认使用 `on_ingest`，不展示 macOS 专属选项。
+5. 将选择写入 `00-index/skill-config.json`，后续不重复询问，除非用户要求更换方式。
 
 ## 运行规则
 
@@ -49,13 +63,17 @@ metadata:
 2. 展示解析和候选知识点，但不要求用户重复选择解析。
 3. 等待用户确认写入知识点，并选择 `1 知识点不会` 或 `2 知识点会但是做题思路不对`。
 4. 确认后写入复盘库，生成稳定 `mistake_id` 和七日复测日期。
-5. 用户要求图谱标注时，先确认输入文件是 `.xmind`，展示红/黄方案并等待确认，再执行写入。
-6. 基础图谱不预先染色；标注输出与源图谱分离。
-7. 所有推荐知识点都必须能追溯到题目、解析、用户标签或图谱关系。
+5. `on_ingest` 模式下，入库后自动生成或更新当前周和上一周的 `02-weekly/YYYY-Www.md`。
+6. `launchd` 模式只由用户选择后启用；`manual` 模式只在用户明确要求时运行周复盘脚本。
+7. 用户要求图谱标注时，先确认输入文件是 `.xmind`，展示红/黄方案并等待确认，再执行写入。
+8. 基础图谱不预先染色；标注输出与源图谱分离。
+9. 所有推荐知识点都必须能追溯到题目、解析、用户标签或图谱关系。
 
 ## 脚本
 
 - `scripts/init-review-vault.js`：初始化复盘库目录。
+- `scripts/configure-automation.js`：保存周复盘触发方式，并按用户选择生成可选的 macOS LaunchAgent 配置。
+- `scripts/generate-weekly-review.js`：从错题索引和复测队列生成当前周与上一周周复盘。
 - `scripts/prepare-confirmation.js`：生成入库确认单。
 - `scripts/ingest-mistakes.js`：写入错题卡、索引、复测队列和科目视图。
 - `scripts/metrics-dashboard.js`：生成指标面板。
@@ -72,7 +90,10 @@ metadata:
 00-index/                         # 统计真源和复测队列
 01-daily/YYYY-MM-DD/              # 每日原始材料与已确认错题
 02-weekly/                        # 周复盘
-03-maps/<科目>/                    # 基础图谱
+03-maps/<科目>/                    # 按需创建的科目图谱
+  00-source/                       # 原始 .xmind
+  01-base/                         # 基础图谱
+  02-marked/                       # 标注图谱
 04-mistakes/by-subject/<科目>/     # 科目薄弱点
 04-mistakes/by-cause/<错因>/       # 错因视图
 05-learning-docs/                 # 学习文档

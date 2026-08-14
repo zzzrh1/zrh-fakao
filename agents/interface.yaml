@@ -7,6 +7,7 @@ input_files:
   - optional: uploaded_wrong_question_images
   - references/knowledge-graph-commercial-company-law.json
   - optional: external_knowledge_graph.json
+  - optional: user_xmind_mind_map.xmind
   - optional: question_bank.json
   - optional: daily_wrong_questions.md
 inputs:
@@ -50,6 +51,10 @@ inputs:
     type: object
     required: false
     description: Nodes, parent links, adjacent/confusable links, and optional heat scores.
+  xmind_file:
+    type: string
+    required: false
+    description: User-supplied mind map for marking. Must be an XMind file ending in .xmind; other mind-map formats are not accepted by the XMind marking workflow.
   question_bank:
     type: object
     required: false
@@ -119,6 +124,7 @@ constraints:
   - Do not treat low-confidence AI diagnosis as fact.
   - Do not expose or request API secrets.
   - Keep outputs usable even when OCR fails by switching to manual tags.
+  - Accept a user-supplied mind map for the marking workflow only when it is an XMind .xmind file; do not treat OPML, PDF, or image files as XMind input.
   - Keep daily review records separate from the base knowledge graph.
   - Count a mistake once in the index, even if it appears in multiple folders or views.
   - Do not ask the user to select explanations; preserve recognized explanations exactly and write them with the wrong-question card by default.

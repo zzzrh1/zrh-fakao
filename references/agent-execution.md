@@ -65,3 +65,17 @@ At the end of a work session, create a study-log delta:
 - unresolved `???`
 - next recommended practice
 - what should be asked next time
+
+## First-Run Obsidian Configuration
+
+- Resolve the user's Obsidian Vault from the explicit request or host configuration; do not infer a fixed local path.
+- If `REVIEW_VAULT/00-index/skill-config.json` is missing, initialize the core folders and ask for the weekly-review method before durable writing.
+- On macOS, ask once whether the user wants `on_ingest`, optional `launchd`, or `manual`; persist the answer in `skill-config.json`.
+- On other systems, use portable `on_ingest` by default and do not present the macOS-only `launchd` choice.
+- Create subject map folders only when the subject is first used. Keep source `.xmind`, base maps, and marked maps in separate subdirectories.
+
+## Weekly Review Trigger
+
+- After confirmed ingestion or a retest update, use the configured trigger to refresh `02-weekly/YYYY-Www.md`.
+- The portable event trigger refreshes the current and previous ISO week; a scheduled macOS trigger runs the same generator.
+- Preserve manual notes outside the generated markers.

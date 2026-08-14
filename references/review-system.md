@@ -27,6 +27,7 @@ Use this when the user wants durable daily复盘, seven-day retests, visual wron
 
 ```text
 00-index/
+  skill-config.json
   mistake-index.json
   retest-queue.json
 01-daily/
@@ -37,20 +38,28 @@ Use this when the user wants durable daily复盘, seven-day retests, visual wron
 02-weekly/
   YYYY-Www.md
 03-maps/
-  民法/
-  刑法/
   民诉/
-  刑诉/
-  行政法/
-  商经知/
-  理论法/
-  三国法/
+    00-source/
+    01-base/
+    02-marked/
 04-mistakes/
   by-subject/
   by-cause/
 05-learning-docs/
 06-assets/
 ```
+
+Subject folders are created on demand. The bundled example currently covers 民诉; a user-provided `.xmind` file can initialize another subject without precreating empty folders for every exam subject.
+
+## Weekly Review Automation
+
+The weekly review is generated into `02-weekly/YYYY-Www.md` from `00-index/mistake-index.json` and `00-index/retest-queue.json`.
+
+- `on_ingest`: refresh the current and previous ISO week after confirmed ingestion or retest updates.
+- `launchd`: optional macOS LaunchAgent scheduling, enabled only after the user chooses it during first-time configuration.
+- `manual`: generate only when explicitly requested.
+
+Generated content is enclosed in `AUTO-GENERATED` markers. Manual notes outside the markers are preserved on later refreshes.
 
 ## Daily Folder Rule
 

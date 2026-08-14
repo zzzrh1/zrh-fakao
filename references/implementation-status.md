@@ -17,6 +17,9 @@ Design source: external product notes; not required at runtime.
 - Seven-day retest result updates for closed-loop repair: `scripts/update-retest.js`.
 - Pre-write confirmation sheet that hides the question, lists exact explanations for visibility, asks only for user-supplied knowledge points and one of two displayed cause tags, and treats confirmation as implied ingestion: `scripts/prepare-confirmation.js`.
 - Runtime path resolution contract for user-specific vaults, technical workspaces, source materials, graphs, and backups: `references/path-configuration.md`.
+- Core Obsidian Vault initialization with on-demand subject folders and persistent configuration: `scripts/init-review-vault.js`.
+- Weekly review generation from the mistake index and retest queue: `scripts/generate-weekly-review.js`.
+- Portable event-trigger automation plus optional macOS `launchd` configuration: `scripts/configure-automation.js`.
 
 ## Still Manual Or Data-Dependent
 

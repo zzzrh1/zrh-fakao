@@ -222,3 +222,29 @@ When maintaining the durable review layer, use these files:
 
 ## 今日结论
 ```
+
+### Weekly Review
+
+```markdown
+# 2026-W27 周复盘
+
+<!-- AUTO-GENERATED:START -->
+## 数据概览
+
+- 本周导入错题：
+- 本周 counted 错题：
+- 本周复测通过率：
+
+## 科目分布
+
+## 错因组成
+
+## 高频薄弱点
+
+## 每日复盘入口
+<!-- AUTO-GENERATED:END -->
+
+## 人工复盘补充
+```
+
+The generated section is refreshed from `mistake-index.json` and `retest-queue.json`; manual content outside the markers is preserved.

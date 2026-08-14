@@ -1,6 +1,6 @@
 ---
 name: wrong-question-review-system
-description: Portable law-exam wrong-question review system with structured diagnosis, user-confirmed knowledge mapping, optional XMind marking, daily and weekly review, seven-day retesting, and learning-document generation.
+description: Portable law-exam wrong-question review system with structured diagnosis, user-confirmed knowledge mapping, user-supplied XMind mind-map marking, daily and weekly review, seven-day retesting, and learning-document generation. The bundled mind-map example currently covers 民诉; more subjects will be added later.
 metadata:
   author: AI法师张诚
   portability: user-configured paths
@@ -23,7 +23,8 @@ metadata:
 - **错题诊断**：识别题干、选项、答案、解析、表层知识点、根因和易混点。
 - **确认门**：写入前只确认知识点和一个错因标签，避免把推断直接当成用户事实。
 - **复盘索引**：按日期、科目、单元和错因组织错题，`mistake-index.json` 是统计真源。
-- **图谱标注**：支持用户提供的知识图谱；提供 XMind 标注脚本，红色表示直接薄弱点，黄色表示易混点。
+- **图谱标注**：支持用户上传自己的思维导图，但思维导图输入必须是 `.xmind` 格式；提供 XMind 标注脚本，红色表示直接薄弱点，黄色表示易混点。
+- **科目覆盖**：当前仓库只内置民诉示例，其他法考科目将在后续版本持续更新；用户也可以先上传对应科目的 `.xmind` 图谱。
 - **七日复测**：记录 `passed`、`failed`、`skipped`，形成恢复闭环。
 - **学习文档**：围绕薄弱点生成前置知识、主体讲解、易混点、思考题和反馈区。
 
@@ -36,7 +37,8 @@ metadata:
 - 所有用户路径在运行时确定，禁止写死主目录、桌面、应用容器、Obsidian vault 或备份位置。
 - 使用 `REVIEW_VAULT` 保存持久化复盘文件。
 - 使用 `TECHNICAL_WORKSPACE` 保存临时转换、图谱报告和调试产物。
-- 使用 `SOURCE_MATERIALS` 表示用户提供的图片、OCR、PDF、XMind 或题库文件。
+- 使用 `SOURCE_MATERIALS` 表示用户提供的错题图片、OCR、PDF 或题库文件；思维导图输入单独使用 `SOURCE_XMIND`，且必须是 `.xmind` 格式。
+- 使用 `SOURCE_XMIND` 指定用户上传的 XMind 思维导图；不把 OPML、PDF 或图片当作本功能的思维导图输入。
 - 使用 `GRAPH_FILE` 指定当前科目的图谱；内置图谱只作为相关科目的 fallback。
 - 使用 `TARGET_VAULT` 和 `BACKUP_DIR` 处理用户明确选择的 Obsidian 写入和备份。
 - 路径解析和脚本示例见 `references/path-configuration.md`。
@@ -47,7 +49,7 @@ metadata:
 2. 展示解析和候选知识点，但不要求用户重复选择解析。
 3. 等待用户确认写入知识点，并选择 `1 知识点不会` 或 `2 知识点会但是做题思路不对`。
 4. 确认后写入复盘库，生成稳定 `mistake_id` 和七日复测日期。
-5. 用户要求图谱标注时，先展示红/黄方案并等待确认，再执行写入。
+5. 用户要求图谱标注时，先确认输入文件是 `.xmind`，展示红/黄方案并等待确认，再执行写入。
 6. 基础图谱不预先染色；标注输出与源图谱分离。
 7. 所有推荐知识点都必须能追溯到题目、解析、用户标签或图谱关系。
 

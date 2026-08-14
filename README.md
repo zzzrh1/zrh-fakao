@@ -16,7 +16,7 @@
 
 ## 这是什么
 
-这是一个面向法考学习的错题复盘 skill。它不只保存“错了哪道题”，而是把每道错题拆成：
+这是一个面向法考学习的错题复盘 skill。它不只保存“错了哪道题”，而是把每道错题拆成以下学习闭环；同时支持用户上传自己的 XMind 思维导图进行标注。思维导图输入必须是 `.xmind` 格式，当前仓库只内置民诉示例，其他科目后续更新：
 
 ```text
 错题输入 → 结构化识别 → 错因诊断 → 知识点确认 → 图谱标注 → 七日复测 → 恢复追踪
@@ -101,13 +101,16 @@ node scripts/metrics-dashboard.js "$REVIEW_VAULT" "$TECHNICAL_WORKSPACE/metrics-
 - 🔴 **红色**：直接薄弱点或重复/高影响错误。
 - 基础图谱保持无颜色；标注结果写入独立输出，不污染原始图谱。
 
-如果用户提供了自己的 `.xmind` 文件，可以在确认后运行：
+如果用户提供了自己的思维导图，必须使用 `.xmind` 格式。当前仓库只提供民诉示例，其他科目会在后续版本更新。确认后运行：
 
 ```bash
-node scripts/mark-xmind.js <SOURCE_XMIND> <MARKS_JSON>
+SOURCE_XMIND="<SOURCE_XMIND>"
+MARKS_JSON="<MARKS_JSON>"
+
+node scripts/mark-xmind.js "$SOURCE_XMIND" "$MARKS_JSON"
 ```
 
-脚本保留源文件，并在同目录生成 `-标注版.xmind`。
+脚本会保留源文件，并在同目录生成 `-标注版.xmind`。OPML、PDF 和图片不能作为这一步的思维导图输入。
 
 ## 文件结构
 
@@ -126,14 +129,14 @@ node scripts/mark-xmind.js <SOURCE_XMIND> <MARKS_JSON>
 05-learning-docs/
 ```
 
-仓库中的示例资料包括民诉知识结构、Markdown/OPML 导出和已生成的 XMind 版本；它们用于演示和回归测试，不会覆盖用户自己的资料。
+仓库中的示例资料目前只覆盖民诉；其中 `.xmind` 文件可用于思维导图标注演示，Markdown/OPML 仅作导出参考，不会覆盖用户自己的资料。
 
 ## 可移植性
 
 这个 skill 面向其他用户复用：
 
 - 不写死用户主目录、桌面目录、Obsidian vault 或备份目录。
-- 运行时配置 `REVIEW_VAULT`、`TECHNICAL_WORKSPACE`、`SOURCE_MATERIALS`、`GRAPH_FILE`、`BACKUP_DIR` 和 `TARGET_VAULT`。
+- 运行时配置 `REVIEW_VAULT`、`TECHNICAL_WORKSPACE`、`SOURCE_MATERIALS`、`SOURCE_XMIND`、`GRAPH_FILE`、`BACKUP_DIR` 和 `TARGET_VAULT`。
 - 没有指定持久化路径时，默认停留在预览模式或使用宿主提供的临时目录。
 - 用户提供的图谱优先；内置公司法图谱仅作为相关科目的 fallback。
 - 没有可信题库时，不宣称题库精确匹配。

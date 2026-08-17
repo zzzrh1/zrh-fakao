@@ -5,9 +5,13 @@
 错题分析 · 知识图谱标注 · 日/周复盘 · 七日复测 · 学习文档
 
 <p align="center">
-  <a href="https://github.com/zzzrh1/zrh-fakao"><img src="https://img.shields.io/badge/领域-法律学习-183B56?style=flat-square" alt="法律学习"></a>
-  <a href="https://github.com/zzzrh1/zrh-fakao"><img src="https://img.shields.io/badge/流程-分析到复测-2E7D6B?style=flat-square" alt="分析到复测"></a>
-  <a href="https://github.com/zzzrh1/zrh-fakao"><img src="https://img.shields.io/badge/格式-Markdown%20%7C%20JSON%20%7C%20XMind-CB8B2E?style=flat-square" alt="Markdown JSON XMind"></a>
+  <img src="https://img.shields.io/badge/领域-法律学习-183B56?style=flat-square" alt="法律学习">
+  <img src="https://img.shields.io/badge/流程-分析到复测-2E7D6B?style=flat-square" alt="分析到复测">
+  <img src="https://img.shields.io/badge/格式-Markdown%20%7C%20JSON%20%7C%20XMind-CB8B2E?style=flat-square" alt="Markdown JSON XMind">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/review-loop.svg" width="100%" alt="法考错题复盘从输入、诊断、确认到复测和复盘的学习闭环">
 </p>
 
 <p align="center">
